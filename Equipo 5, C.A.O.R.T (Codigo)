@@ -1,0 +1,403 @@
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include <string>
+#include <map>
+#include <iomanip>
+#include <limits>
+using namespace std;
+
+#define PI 3.1415926535
+const double AU = 149597870.7;
+const double DEG_TO_RAD = PI / 180.0;
+
+
+double a, e, i, Omega, omega, M0, n, t0;
+
+void limpiarPantalla() {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
+void pausar() {
+    std::cout << "\nPresiona ENTER para continuar...";
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.get();
+}
+
+void mostrarBienvenida() {
+    std::cout << "=============================" << std::endl;
+    std::cout << "   CALCULO DE APROXIMACION DE       " << std::endl;
+    std::cout << "   OBJETOS CON RESPECTO LA TIERRA      " << std::endl;
+    std::cout << "             C.A.O.R.T.      " << std::endl;
+    std::cout << "=============================" << std::endl;
+    std::cout << "    Creado por: Rasti, Felipe, Angel\n" << std::endl;
+}
+
+void mostrarMenu() {
+    std::cout << "\nMenu Principal:\n";
+    std::cout << "[1] Mostrar elementos orbitales\n";
+    std::cout << "[2] Calcular posicion heliocentrica\n";
+    std::cout << "[3] Mostrar aproximaciones cercanas a la Tierra\n";
+    std::cout << "[4] Salir\n";
+    std::cout << "[5] Elegir otros elementos orbitales\n";
+    std::cout << "Selecciona una opcion: ";
+}
+
+bool leer_elementos(const std::string& filename) {
+    std::ifstream file(filename.c_str());
+    if (!file.is_open()) {
+        std::cerr << "No se pudo encontrar o abrir el archivo, intente otra vez: " << filename << "\n";
+        return false;
+    }
+
+    std::map<std::string, double*> campos;
+    campos["a"] = &a;
+    campos["e"] = &e;
+    campos["i"] = &i;
+    campos["Omega"] = &Omega;
+    campos["omega"] = &omega;
+    campos["M0"] = &M0;
+    campos["n"] = &n;
+    campos["t0"] = &t0;
+
+    std::string nombre;
+    double valor;
+    while (file >> nombre >> valor) {
+        if (campos.find(nombre) != campos.end()) {
+            *(campos[nombre]) = valor;
+        }
+    }
+
+    i *= DEG_TO_RAD;
+    Omega *= DEG_TO_RAD;
+    omega *= DEG_TO_RAD;
+    M0 *= DEG_TO_RAD;
+
+    return true;
+}
+
+double resolverEcuacionKepler(double M, double e) {
+    double E = M;
+    double delta;
+    do {
+        delta = (E - e * sin(E) - M) / (1 - e * cos(E));
+        E -= delta;
+    } while (fabs(delta) > 1e-6);
+    return E;
+}
+
+void calcular_posicion(double t) {
+    double M = M0 + n * (t - t0);
+    double E = resolverEcuacionKepler(M, e);
+
+    double xp = a * (cos(E) - e);
+    double yp = a * sqrt(1 - e * e) * sin(E);
+
+    double cos_O = cos(Omega), sin_O = sin(Omega);
+    double cos_w = cos(omega), sin_w = sin(omega);
+    double cos_i = cos(i), sin_i = sin(i);
+
+    double x = (cos_O * cos_w - sin_O * sin_w * cos_i) * xp +
+               (-cos_O * sin_w - sin_O * cos_w * cos_i) * yp;
+    double y = (sin_O * cos_w + cos_O * sin_w * cos_i) * xp +
+               (-sin_O * sin_w + cos_O * cos_w * cos_i) * yp;
+    double z = (sin_w * sin_i) * xp + (cos_w * sin_i) * yp;
+
+    std::cout << std::fixed << std::setprecision(3);
+    std::cout << "\nPosicion heliocentrica (km):\n";
+    std::cout << "X = " << x * AU << "\n";
+    std::cout << "Y = " << y * AU << "\n";
+    std::cout << "Z = " << z * AU << "\n";
+}
+
+void mostrarElementos() {
+    std::cout << "\nElementos orbitales cargados:\n";
+    std::cout << "a     = " << a << " AU\n";
+    std::cout << "e     = " << e << "\n";
+    std::cout << "i     = " << i * 180.0 / PI << " grados\n";
+    std::cout << "Omega = " << Omega * 180.0 / PI << " grados\n";
+    std::cout << "omega = " << omega * 180.0 / PI << " grados\n";
+    std::cout << "M0    = " << M0 * 180.0 / PI << " grados\n";
+    std::cout << "n     = " << n << " rad/dia\n";
+    std::cout << "t0    = " << t0 << " (JD)\n";
+}
+
+void tierra_kepler(double jd, double& x, double& y, double& z) {
+    const double a_tierra = 1.00000011;
+    const double e_tierra = 0.01671022;
+    const double i_tierra = 0.00005 * DEG_TO_RAD;
+    const double Omega_tierra = -11.26064 * DEG_TO_RAD;
+    const double omega_tierra = 102.94719 * DEG_TO_RAD;
+    const double M0_tierra = 100.46435 * DEG_TO_RAD;
+    const double t0_tierra = 2451545.0;
+    const double n_tierra = 0.9856076686 * DEG_TO_RAD;
+
+    double M = M0_tierra + n_tierra * (jd - t0_tierra);
+    M = fmod(M, 2 * PI);
+    if (M < 0) M += 2 * PI;
+
+    double E = resolverEcuacionKepler(M, e_tierra);
+    double nu = 2 * atan2(sqrt(1 + e_tierra) * sin(E / 2), sqrt(1 - e_tierra) * cos(E / 2));
+    double r = a_tierra * (1 - e_tierra * cos(E)) * AU;
+
+    double x_orb = r * cos(nu);
+    double y_orb = r * sin(nu);
+
+    double x1 = cos(omega_tierra) * x_orb - sin(omega_tierra) * y_orb;
+    double y1 = sin(omega_tierra) * x_orb + cos(omega_tierra) * y_orb;
+
+    double x2 = x1;
+    double y2 = y1 * cos(i_tierra);
+    double z2 = y1 * sin(i_tierra);
+
+    x = x2 * cos(Omega_tierra) - y2 * sin(Omega_tierra);
+    y = x2 * sin(Omega_tierra) + y2 * cos(Omega_tierra);
+    z = z2;
+}
+
+void asteroide(double jd, double& x, double& y, double& z) {
+    double P = 323.6;
+    double n_local = 2 * PI / P;
+    double M = M0 + n_local * (jd - t0);
+
+    M = fmod(M, 2 * PI);
+    if (M < 0) M += 2 * PI;
+
+    double E = resolverEcuacionKepler(M, e);
+    double nu = 2 * atan2(sqrt(1 + e) * sin(E / 2), sqrt(1 - e) * cos(E / 2));
+    double r = a * (1 - e * cos(E)) * AU;
+
+    double x_orb = r * cos(nu);
+    double y_orb = r * sin(nu);
+
+    double x1 = cos(omega) * x_orb - sin(omega) * y_orb;
+    double y1 = sin(omega) * x_orb + cos(omega) * y_orb;
+
+    double x2 = x1;
+    double y2 = y1 * cos(i);
+    double z2 = y1 * sin(i);
+
+    x = x2 * cos(Omega) - y2 * sin(Omega);
+    y = x2 * sin(Omega) + y2 * cos(Omega);
+    z = z2;
+}
+
+double distancia(double x1, double y1, double z1, double x2, double y2, double z2) {
+    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2) + pow(z2 - z1, 2));
+}
+
+void jd_to_date(double jd, int& year, int& month, int& day) {
+    int J = int(jd + 0.5);
+    int j = J + 32044;
+    int g = j / 146097;
+    int dg = j % 146097;
+    int c = (dg / 36524 + 1) * 3 / 4;
+    int dc = dg - c * 36524;
+    int b = dc / 1461;
+    int db = dc % 1461;
+    int a = (db / 365 + 1) * 3 / 4;
+    int da = db - a * 365;
+    int y = g * 400 + c * 100 + b * 4 + a;
+    int m = (da * 5 + 308) / 153 - 2;
+    int d = da - (m + 4) * 153 / 5 + 122;
+    year = y - 4800 + (m + 2) / 12;
+    month = (m + 2) % 12 + 1;
+    day = d + 1;
+}
+
+void buscar_aproximaciones() {
+    double anos;
+     std::cout << "Cuanto sa�os quieres calcular las aproximaciones, (Sin exagerar por favor ) ";
+        std::cin >> anos;
+	double jd_start = t0;
+    double jd_end = jd_start + 365 * anos;
+    double paso = 1.0;
+
+    std::cout << "\nAproximaciones cercanas (< 0.2 AU):\n";
+    std::cout << "Fecha          Distancia (km)\n";
+    std::cout << "-------------  ----------------\n";
+
+    for (double jd = jd_start; jd <= jd_end; jd += paso) {
+        double xt, yt, zt, xa, ya, za;
+        tierra_kepler(jd, xt, yt, zt);
+        asteroide(jd, xa, ya, za);
+        double d = distancia(xt, yt, zt, xa, ya, za);
+
+        if (d < 0.2 * AU) {
+            int y, m, d_;
+            jd_to_date(jd, y, m, d_);
+            std::cout << y << "-" << std::setw(2) << std::setfill('0') << m << "-"
+                      << std::setw(2) << d_ << "    " << std::fixed << std::setprecision(0)
+                      << d << " km\n";
+        }
+    }
+    std::ofstream salida("trayectorias.csv");
+for (double jd = jd_start; jd <= jd_end; jd += paso) {
+    double xt, yt, zt, xa, ya, za;
+    tierra_kepler(jd, xt, yt, zt);
+    asteroide(jd, xa, ya, za);
+    salida << xt * AU << "," << yt * AU << "," << xa * AU << "," << ya * AU << "\n";
+}
+salida.close();
+
+std::ofstream output("aproximaciones_cercanas.txt");
+output << "Fecha\t\tDistancia (km)\n";
+output << "------------------------------\n";
+
+for (double jd = jd_start; jd <= jd_end; jd += paso) {
+    double xt, yt, zt, xa, ya, za;
+    tierra_kepler(jd, xt, yt, zt);
+    asteroide(jd, xa, ya, za);
+    double d = distancia(xt, yt, zt, xa, ya, za);
+
+    if (d < 0.5 * AU) {
+        int y, m, d_;
+        jd_to_date(jd, y, m, d_);
+        output << y << "-" << std::setw(2) << std::setfill('0') << m << "-"
+               << std::setw(2) << d_ << "\t" << std::fixed << std::setprecision(0)
+               << d << "\n";
+    }
+}
+output.close();
+
+
+    pausar();
+}
+
+void repetir (){
+	int repetiropcion;
+	std::string archivo;
+    std::cout << "\nQuieres ingresar otro archivo de elementos orbitales?, recuerde que su archivo debe ser un .txt: ";
+     std::cout << "\nSi(1), no(2) ";
+    std::cin >> repetiropcion;
+    
+	if(repetiropcion==1){
+		
+	std::cout << "\nIngresa el nombre del archivo de elementos orbitales, recuerde que su archivo debe ser un .txt: ";
+    std::getline(std::cin, archivo);	
+		
+	}else if(repetiropcion=2){
+	
+	std::cout << "\nOK";
+	
+	}
+	else{
+	std::cout << "\nIngresa una opcion valida...  ";
+	repetir;	
+	}
+	
+    
+	
+}
+double date_to_jd(int year, int month, int day) {
+    if (month <= 2) {
+        year--;
+        month += 12;
+    }
+    int A = year / 100;
+    int B = 2 - A + A / 4;
+    double jd = int(365.25 * (year + 4716)) +
+                int(30.6001 * (month + 1)) +
+                day + B - 1524.5;
+    return jd;
+}
+
+
+int main() {
+    
+
+    int opcion;
+    
+		std::string archivo;
+    std::cout << "Ingresa el nombre del archivo de elementos orbitales, recuerde que su archivo debe ser un .txt: ";
+    std::getline(std::cin, archivo);
+    if (!leer_elementos(archivo)) {
+        std::cout << "Error al leer el nuevo archivo.\n";
+        std::cout << "Vuelve a iniciarlo, saliendo.....\n";
+        return 0;
+	
+	}
+	do {
+    	int fora = 1;
+    	
+    	
+	
+		
+        limpiarPantalla();
+        mostrarBienvenida();
+        mostrarMenu();
+        
+        
+        
+        
+while (!(std::cin >> opcion) || opcion < 1 || opcion > 5) {
+    std::cin.clear(); 
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
+    std::cout << "Opci�n inv�lida. Por favor, ingresa un n�mero del 1 al 5: ";
+}
+
+        switch (opcion) {
+            case 1:
+                limpiarPantalla();
+                mostrarElementos();
+                pausar();
+                break;
+            case 2: {
+                int y, m, d;
+    std::cout << "\nIngresa el a�o: ";
+    std::cin >> y;
+    std::cout << "Ingresa el mes: ";
+    std::cin >> m;
+    std::cout << "Ingresa el d�a: ";
+    std::cin >> d;
+
+    double t = date_to_jd(y, m, d);
+    calcular_posicion(t);
+    pausar();
+    
+                break;
+            }
+            case 3:
+                limpiarPantalla();
+            
+                buscar_aproximaciones();
+                break;
+                
+            case 4:
+                std::cout << "\n Saliendo del programa.\n";
+                break;
+           
+            case 5:
+				
+			{
+            	std::string archivo;
+                std::cout << "\nIngresa el nombre del archivo de elementos orbitales, recuerde que su archivo debe ser un .txt: ";
+    		std::cin.ignore();
+				std::getline(std::cin, archivo);
+    			if (!leer_elementos(archivo)) {
+        std::cout << "Error al leer el nuevo archivo.\n";
+       
+		}
+                break;
+                
+				}
+            default:
+                std::cout << "\n Opcion no valida.\n";
+                pausar();
+                break;
+            
+            }
+          
+       
+    } while (opcion != 4);
+  
+
+
+
+    return 0;
+}
+
