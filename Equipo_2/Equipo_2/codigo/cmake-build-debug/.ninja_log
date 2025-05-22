@@ -1,0 +1,25 @@
+# ninja log v6
+4	330	7693928211665777	build.ninja	80cc1ee51722ed7f
+5	113	7692567975225090	CMakeFiles/Simulador_Caida_CanSat.dir/main.c.obj	33c661b544ee532a
+11	228	7692421368715362	CMakeFiles/Simulador_Caida_CanSat.dir/entrada_datos.c.obj	1734b80600c49653
+760	876	7692571764535723	Simulador_Caida_CanSat.exe	d3769674c9fa57be
+7	759	7692571757003759	CMakeFiles/Simulador_Caida_CanSat.dir/simulacion.c.obj	f335cec03748d5f0
+32	222	7692421368930616	CMakeFiles/Simulador_Caida_CanSat.dir/interfaz.c.obj	4001f5c90ebb7566
+25	230	7692421368853634	CMakeFiles/Simulador_Caida_CanSat.dir/atmósfera.c.obj	85e126b1dce4918c
+22	123	7692567975393377	CMakeFiles/Simulador_Caida_CanSat.dir/simrandom.c.obj	a8cc8cab5c8af64c
+10	142	7693928244698610	CMakeFiles/Simulador_Caida_CanSat.dir/main.c.obj	a5ef52c483afc1a
+19	151	7693928244796717	CMakeFiles/Simulador_Caida_CanSat.dir/entrada_datos.c.obj	a2e8e993427e9712
+34	172	7693928244940255	CMakeFiles/Simulador_Caida_CanSat.dir/atmósfera.c.obj	3653242edd40c9ef
+44	175	7693928245042928	CMakeFiles/Simulador_Caida_CanSat.dir/interfaz.c.obj	d4370e617bc5cea8
+53	192	7693928245133002	CMakeFiles/Simulador_Caida_CanSat.dir/simrandom.c.obj	5e5dfad48da5928a
+26	1249	7693928244864550	CMakeFiles/Simulador_Caida_CanSat.dir/simulacion.c.obj	fabace4a3bbfe919
+1249	1434	7693928257094318	Simulador_Caida_CanSat.exe	d3769674c9fa57be
+10	140	7693935097943007	CMakeFiles/Simulador_Caida_CanSat.dir/main.c.obj	a5ef52c483afc1a
+141	296	7693935099258447	Simulador_Caida_CanSat.exe	d3769674c9fa57be
+19	118	7693935628759193	CMakeFiles/Simulador_Caida_CanSat.dir/atmósfera.c.obj	3653242edd40c9ef
+9	126	7693935628649005	CMakeFiles/Simulador_Caida_CanSat.dir/main.c.obj	a5ef52c483afc1a
+127	279	7693935629830223	Simulador_Caida_CanSat.exe	d3769674c9fa57be
+8	129	7693936705938691	CMakeFiles/Simulador_Caida_CanSat.dir/simrandom.c.obj	5e5dfad48da5928a
+130	279	7693936707162107	Simulador_Caida_CanSat.exe	d3769674c9fa57be
+8	1030	7693937257872308	CMakeFiles/Simulador_Caida_CanSat.dir/simulacion.c.obj	fabace4a3bbfe919
+1031	1151	7693937268090421	Simulador_Caida_CanSat.exe	d3769674c9fa57be

@@ -1,0 +1,3 @@
+C:/Users/adylm/OneDrive/Escritorio/UNAM/2do_sem/progra/Equipo_2/codigo/cmake-build-debug/CMakeFiles/Simulador_Caida_CanSat.dir
+C:/Users/adylm/OneDrive/Escritorio/UNAM/2do_sem/progra/Equipo_2/codigo/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/adylm/OneDrive/Escritorio/UNAM/2do_sem/progra/Equipo_2/codigo/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,60 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Simulador_Caida_CanSat",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Simulador_Caida_CanSat::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Simulador_Caida_CanSat-Debug-4346b980451b64d7476e.json",
+					"name" : "Simulador_Caida_CanSat",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/adylm/OneDrive/Escritorio/UNAM/2do_sem/progra/Equipo_2/codigo/cmake-build-debug",
+		"source" : "C:/Users/adylm/OneDrive/Escritorio/UNAM/2do_sem/progra/Equipo_2/codigo"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}
